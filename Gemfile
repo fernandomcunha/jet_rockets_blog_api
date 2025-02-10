@@ -33,4 +33,9 @@ group :development, :test do
 
   gem 'dotenv'
   gem 'rspec-rails'
+  gem 'factory_bot_rails'
+end
+
+group :test do
+  gem 'shoulda-matchers'
 end

@@ -9,6 +9,6 @@ class CreateRatings < ActiveRecord::Migration[8.0]
     end
 
     add_check_constraint :ratings, "value BETWEEN 1 AND 5", name: "value_range_check"
-    add_index :ratings, [:user_id, :post_id], unique: true, name: 'index_ratings_on_user_id_and_post_id'
+    add_index :ratings, [ :user_id, :post_id ], unique: true, name: 'index_ratings_on_user_id_and_post_id'
   end
 end

@@ -16,24 +16,24 @@ RSpec.describe 'Api::Posts', type: :request do
           expect {
             post api_posts_path, params: valid_attributes
           }.to change(Post, :count).by(1).and change(User, :count).by(1)
-  
+
           expect(response).to have_http_status(:created)
           expect(JSON.parse(response.body)).to include('post', 'user')
         end
       end
-      
+
       context 'where there is an existing user' do
         let!(:user) { create(:user, login: valid_attributes[:login]) }
 
-        it 'creates a post for an existing user' do  
+        it 'creates a post for an existing user' do
           expect {
             post api_posts_path, params: valid_attributes
           }.to change(Post, :count).by(1).and change(User, :count).by(0)
-  
+
           expect(response).to have_http_status(:created)
           expect(JSON.parse(response.body)).to include('post', 'user')
         end
-      end      
+      end
     end
 
     context 'when the request is invalid' do
@@ -53,10 +53,10 @@ RSpec.describe 'Api::Posts', type: :request do
           create_list(:post, 5, user: user) do |post|
             create(:rating, user: user, post: post, value: rand(1..5))
           end
-        end      
-  
+        end
+
         get api_top_posts_path, params: { limit: 3 }
-  
+
         expect(response).to have_http_status(:ok)
         expect(JSON.parse(response.body).size).to eq(3)
       end
@@ -68,19 +68,19 @@ RSpec.describe 'Api::Posts', type: :request do
           create_list(:post, 5, user: user) do |post|
             create(:rating, user: user, post: post, value: rand(1..5))
           end
-        end      
-  
+        end
+
         get api_top_posts_path
-  
+
         expect(response).to have_http_status(:ok)
         expect(JSON.parse(response.body).size).to eq(10)
       end
     end
 
     context 'when invalid limit parameter is provided' do
-      it 'returns the top 3 posts by average rating' do  
+      it 'returns the top 3 posts by average rating' do
         get api_top_posts_path, params: { limit: 'Invalid' }
-  
+
         expect(response).to have_http_status(:unprocessable_entity)
         expect(JSON.parse(response.body)).to include('errors' => 'Invalid limit parameter')
       end
@@ -106,7 +106,7 @@ RSpec.describe 'Api::Posts', type: :request do
       json_response = JSON.parse(response.body)
 
       expect(json_response.length).to eq(4)
-      expect(json_response.map { |record| record['ip'] }).to match_array(['127.0.0.1', '127.0.1.1', '192.168.0.1', '192.168.1.1'])
+      expect(json_response.map { |record| record['ip'] }).to match_array([ '127.0.0.1', '127.0.1.1', '192.168.0.1', '192.168.1.1' ])
       expect(json_response.find { |record| record['ip'] == '127.0.0.1' }['authors'].length).to eq(2)
       expect(json_response.find { |record| record['ip'] == '192.168.0.1' }['authors'].length).to eq(3)
     end

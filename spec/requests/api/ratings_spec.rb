@@ -57,7 +57,7 @@ RSpec.describe 'Api::Ratings', type: :request do
     context 'when the post or user is not found' do
       it 'returns a not found status' do
         post api_ratings_path, params: { post_id: nil, user_id: nil, value: nil }
-        
+
         expect(response).to have_http_status(:not_found)
         expect(JSON.parse(response.body)).to include('errors' => 'Post or User not found')
       end

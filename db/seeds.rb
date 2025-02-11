@@ -8,7 +8,7 @@ RATING_PROBABILITY = 0.75
 
 def create_post(login, ip)
   response = HTTParty.post(
-    'http://localhost:3000/api/posts', 
+    'http://localhost:3000/api/posts',
     headers: { 'Content-Type' => 'application/json' },
     body: { title: Faker::Lorem.sentence, body: Faker::Lorem.paragraph, login: login, ip: ip }.to_json
   )
@@ -18,7 +18,7 @@ end
 
 def create_rating(post_id, user_id, value)
   HTTParty.post(
-    'http://localhost:3000/api/ratings', 
+    'http://localhost:3000/api/ratings',
     headers: { 'Content-Type' => 'application/json' },
     body: { post_id: post_id, user_id: user_id, value: value }.to_json
   )

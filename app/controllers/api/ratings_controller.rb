@@ -16,9 +16,11 @@ class Api::RatingsController < ApplicationController
 
       render json: { average_rating: avg_rating }
     rescue ActiveRecord::RecordInvalid => e
+      logger.error("Error creating rating: #{e.record.errors.full_messages.join(', ')}")
       render json: { errors: e.record.errors.full_messages }, status: :unprocessable_entity
     end
   rescue ActiveRecord::RecordNotFound => e
+    logger.error("Post or User not found: #{e.message}")
     render json: { errors: "Post or User not found" }, status: :not_found
   end
 

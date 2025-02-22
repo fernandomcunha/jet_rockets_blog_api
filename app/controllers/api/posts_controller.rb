@@ -4,7 +4,7 @@ class Api::PostsController < ApplicationController
     post = user.posts.build(post_params.except(:login))
 
     if post.save
-      render json: { post: post, user: user }, status: :created
+      render json: { post: PostSerializer.new(post), user: UserSerializer.new(user) }, status: :created
     else
       render json: { errors: post.errors.full_messages }, status: :unprocessable_entity
     end
@@ -12,18 +12,16 @@ class Api::PostsController < ApplicationController
 
   def top_posts
     top_posts = Post.top_posts_by_avg_rating(params[:limit] || 10)
-    top_posts_attributes = top_posts.map { |post| post.slice(:id, :title, :body) }
 
-    render json: top_posts_attributes, status: :ok
+    render json: top_posts, each_serializer: PostSerializer, status: :ok
   rescue ArgumentError => e
+    logger.error("Invalid limit parameter: #{e.message}")
     render json: { errors: "Invalid limit parameter" }, status: :unprocessable_entity
   end
 
   def ips
     ips_list = Post.ips_posted_by_diff_authors
-    formatted_ips_list = ips_list.group_by(&:ip).map do |ip, posts|
-      { ip: ip, authors: posts.map(&:login) }
-    end
+    formatted_ips_list = format_ips_list(ips_list)
 
     render json: formatted_ips_list, status: :ok
   end
@@ -32,5 +30,17 @@ class Api::PostsController < ApplicationController
 
   def post_params
     params.permit(:title, :body, :login, :ip)
+  end
+
+  def format_ips_list(ips_list)
+    grouped_ips = {}
+    ips_list.each do |post|
+      grouped_ips[post.ip] ||= []
+      grouped_ips[post.ip] << post.login
+    end
+
+    grouped_ips.map do |ip, authors|
+      { ip: ip, authors: authors }
+    end
   end
 end
